@@ -51,7 +51,7 @@ users.push(newUser);
 
 //zur Login-Seite weiterleiten
 res.redirect('/login');
-
+});
 //-----------------------------------
 
 // Route für die Login-Seite

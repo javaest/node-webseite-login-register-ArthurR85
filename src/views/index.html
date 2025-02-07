@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Startseite</title>
+</head>
+<body>
+  <h1>Willkommen auf der Startseite</h1>
+  <!-- Dynamischer Navigationsbereich -->
+  <div id="menu"></div>
+  
+  <script>
+    // Überprüfe, ob eine Session existiert
+    fetch('/get-username')
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Nicht angemeldet');
+        }
+      })
+      .then(data => {
+        // Falls angemeldet: Zeige den Benutzernamen,ContentLink und einen Logout-Button an
+        document.getElementById('menu').innerHTML = `
+          <p>Angemeldet als: ${data.username}</p>
+          <a href="/content">Zum Inhalt</a> 
+          <form action="/logout" method="post" style="display:inline;">
+            <button type="submit">Logout</button>
+          </form>
+        `;
+      })
+      .catch(error => {
+        // Falls nicht angemeldet: Zeige Links zu Login und Registrierung an
+        document.getElementById('menu').innerHTML = `
+          <a href="/login">Login</a> | <a href="/register">Registrieren</a>
+        `;
+      });
+  </script>
+</body>
+</html>
