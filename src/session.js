@@ -6,8 +6,8 @@ const app = express();
 const path = require('path');
 
 let users = [
-  { id: 1, name: 'Alice',password:'test' },
-  { id: 2, name: 'admin',password:'password' }
+  { id: 1, username: 'Alice',password:'test' },
+  { id: 2, username: 'admin',password:'password' }
 ];
 // Middleware für JSON Parsing (falls du POST-Daten benötigst)
 app.use(express.json());
@@ -54,10 +54,26 @@ res.redirect('/login');
 });
 //-----------------------------------
 
-// Route für die Login-Seite
+// Login-Seite anzeigen
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'login.html'));  // Senden der login.html-Seite
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
+
+// Endpoint zum Login
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = users.find(user => user.username === username && user.password === password);
+  
+  if (user) {
+    req.session.user = user.username;
+    return res.redirect('/content');
+  }
+  
+  return res.status(401).send('Benutzername oder Passwort falsch');
+});
+
+
+
 
 // Endpoint 
 app.get('/get-username', (req, res) => {
@@ -68,17 +84,8 @@ app.get('/get-username', (req, res) => {
     }
   });
   
-// Endpoint zum prüfen des Creadentials
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-    if(password=="test" && username=="admin"){
-      req.session.user = username; 
-      return res.redirect('/content');
-    }
-    
-  return res.status(401).send('Benutzername oder Passwort falsch');
 
-});
+
 // Route für die "Context"-Seite nach dem Login
 app.get('/content', (req, res) => {
   if (!req.session.user) {
