@@ -1,7 +1,10 @@
 const express = require('express');
 const session = require('express-session');
+const req = require('express/lib/request');
+const res = require('express/lib/response');
 const app = express();
 const path = require('path');
+
 let users = [
   { id: 1, name: 'Alice',password:'test' },
   { id: 2, name: 'admin',password:'password' }
@@ -18,6 +21,38 @@ app.use(session({
   cookie: { secure: false }           // Secure setzen, wenn du HTTPS verwendest
 }));
 
+
+//-----------------------------------
+//Ergänzung von Arthur R.
+//-----------------------------------
+
+// index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// Register
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'register.html'));
+});
+
+// Registrierung
+app.post ('/register', (req, res) => {
+  const {username, password} = req.body;
+
+// Benutzer vorh.
+if (users.find(u => u.username === username)){
+    return res.status(400).send('Benutzer vergeben');
+}
+
+// Benutzer hinz.
+const newUser = {id: users.length +1, username, password};
+users.push(newUser);
+
+//zur Login-Seite weiterleiten
+res.redirect('/login');
+
+//-----------------------------------
 
 // Route für die Login-Seite
 app.get('/login', (req, res) => {
